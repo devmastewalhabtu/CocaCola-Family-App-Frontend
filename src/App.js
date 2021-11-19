@@ -3,6 +3,8 @@ import { CameraPage, LoginPage, PlayersPage, SocialLinkPage, WelcomePage } from 
 import { Routes, Route } from 'react-router-dom';
 import UserContext from './_helpers/userContext';
 import RouteContext from './_helpers/routeContext';
+import soundfile from './assets/audio/chinese_new_year.mp3'
+import Sound from 'react-sound'
 import { useState } from 'react';
 
 function App() {
@@ -44,6 +46,12 @@ function App() {
           <Route path="my/game" element={<CameraPage />} />
         </Routes>
       </RouteContext.Provider>
+      <Sound
+        url={soundfile}
+        playStatus={Sound.status.PLAYING}
+        autoLoad={true}
+        loop={true}
+      />
     </UserContext.Provider>
   );
 
