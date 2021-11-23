@@ -87,7 +87,7 @@ function PlayersPage() {
             return;
         }
         toggleModal(true)
-        generateInviteLink(user.uid, relation)
+        generateInviteLink(user, relation)
             .then(res => {
                 console.log(res.data)
                 let { linkId } = res.data;
@@ -102,6 +102,7 @@ function PlayersPage() {
                 console.log(link)
             })
             .catch(e => {
+                console.log(e)
                 toggleModal(false)
                 toast("Error occured! Please try again.", {
                     position: "bottom-center",

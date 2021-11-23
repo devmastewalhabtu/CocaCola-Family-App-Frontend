@@ -2,10 +2,14 @@
 // import { functions } from "./Firebase";
 import axios from "axios";
 
-const api = 'https://0473-2a01-4f8-172-40a6-00-2.ngrok.io/coke-cny/us-central1'
+const api = 'http://localhost:5001/family-ref-9b2fb/us-central1'
 
-export const signUpUser = (name, phone_number) => {
-    return axios.post(`${api}/signUp`, {name, phone_number})
+export const sendCode = (name,phone_number) =>{
+    return axios.post(`${api}/sendCode`,{name,phone_number},)
+}
+
+export const verifyToken = (verificationId,sms_token) =>{
+    return axios.post(`${api}/verifyToken`,{verificationId,sms_token});
 }
 
 export const generateInviteLink = (uid, relation) => {

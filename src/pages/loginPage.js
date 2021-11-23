@@ -11,8 +11,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import 'reactjs-popup/dist/index.css';
 import CodeVerification from '../components/codeVerification';
 import ReactFlagsSelect from 'react-flags-select';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import RouteContext from '../_helpers/routeContext';
+import { sendCode } from '../_helpers/cloudFunctions';
+
 const auth = getAuth(FirebaseApp);
 
 function LoginPage() {
@@ -25,11 +27,11 @@ function LoginPage() {
     const [loginSuccess, setLoginSuccess] = useState(false)
     const [open, setOpen] = useState(false);
     let { pathname, state } = useLocation()
-    const {storePath} = useContext(RouteContext)
+    const { storePath } = useContext(RouteContext)
     const containerRef = useRef(null);
-    
     const toggleModal = (state) => setOpen(state);
-
+    const [verificationId, setVerificationId] = useState('');
+    const [uid, setUid]=useState('');
     useEffect(() => {
         if (pathname.toLowerCase().includes('/my')) {
             setCountries(["MY"])
@@ -42,9 +44,9 @@ function LoginPage() {
     }, [pathname])
 
     useEffect(() => {
-        if(state) {
-            const {via, linkId} = state
-            storePath({via, linkId})
+        if (state) {
+            const { via, linkId } = state
+            storePath({ via, linkId })
         }
         //eslint-disable-next-line
     }, [])
@@ -92,7 +94,7 @@ function LoginPage() {
                         Send
                     </button>
                 </form>) :
-                (<CodeVerification userData={{name, phone}} nextPage={state} toggleModal={toggleModal} />)
+                (<CodeVerification userData={{ name, phone, verificationId ,uid}} nextPage={state} toggleModal={toggleModal} />)
             }
 
             <Popup open={open} className="login-popup" closeOnDocumentClick={false} onClose={() => toggleModal(false)}>
@@ -190,24 +192,30 @@ function LoginPage() {
             return
         }
         toggleModal(true)
-        const recaptchaVerifier = setupRecaptcha()
+        //TODO: setuo Recaptach
+        //  const recaptchaVerifier = setupRecaptcha()
+        // console.log(recaptchaVerifier);
 
-        signInWithPhoneNumber(auth, phone, recaptchaVerifier)
-            .then((confirmationResult) => {
-                toggleModal(false)
-                setLoginSuccess(true)
-                window.confirmationResult = confirmationResult
-                containerRef.current.innerHTML = `<div id="recaptcha-container"></div>`
-                // ...
+        sendCode(name, phone)
+            .then(response => {
+                console.log(response.data)
+                if (response.data.user !== undefined) {
+                    var uid = Object.keys(response.data.user)[0]
+                    setUid(uid)
+                    toggleModal(false)
+                    setLoginSuccess(true)
+                } else {
+                    var verificationId = response.data.result;
+                    setVerificationId(verificationId)
+                    toggleModal(false)
+                    setLoginSuccess(true)
+                }
             }).catch((error) => {
                 toggleModal(false)
-                console.log(error)
-                recaptchaVerifier.clear()
-                containerRef.current.innerHTML = `<div id="recaptcha-container"></div>`
-                error = new Error(error).toString().toLowerCase()
+                console.error(error)
                 let errorMsg = "Couldn't log you in"
-                if (error.includes('invalid format')) {
-                    errorMsg = "Invalid phone number. Check your input."
+                if (error.includes('invalid Data')) {
+                    errorMsg = "Invalid phone number or name. Check your input."
                 }
                 toast(errorMsg, {
                     position: "bottom-center",
@@ -218,9 +226,37 @@ function LoginPage() {
                     draggable: false,
                     progress: undefined,
                 });
+            })
 
-                // ...
-            });
+        // signInWithPhoneNumber(auth, phone, recaptchaVerifier)
+        //     .then((confirmationResult) => {
+        //         toggleModal(false)
+        //         setLoginSuccess(true)
+        //         window.confirmationResult = confirmationResult
+        //         containerRef.current.innerHTML = `<div id="recaptcha-container"></div>`
+        //         // ...
+        //     }).catch((error) => {
+        //         toggleModal(false)
+        //         console.log(error)
+        //         recaptchaVerifier.clear()
+        //         containerRef.current.innerHTML = `<div id="recaptcha-container"></div>`
+        //         error = new Error(error).toString().toLowerCase()
+        //         let errorMsg = "Couldn't log you in"
+        //         if (error.includes('invalid format')) {
+        //             errorMsg = "Invalid phone number. Check your input."
+        //         }
+        //         toast(errorMsg, {
+        //             position: "bottom-center",
+        //             autoClose: 4500,
+        //             hideProgressBar: true,
+        //             closeOnClick: true,
+        //             pauseOnHover: false,
+        //             draggable: false,
+        //             progress: undefined,
+        //         });
+
+        //         // ...
+        //     });
 
     }
 
