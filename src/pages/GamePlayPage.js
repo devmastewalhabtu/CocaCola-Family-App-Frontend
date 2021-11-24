@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react'
 import Popup from 'reactjs-popup';
-import { Acknowledge, CameraComponent, GameStartOverlay, QuestionOverlay } from '../components'
+import { CameraComponent, GameStartOverlay, QuestionOverlay } from '../components'
 
 import { getQuiz, getChallenge } from '../_helpers/cloudFunctions';
 import { ToastContainer, toast, Slide } from 'react-toastify';
@@ -16,9 +16,6 @@ function GamePlayPage() {
                 gameStared ? <QuestionOverlay questions={{ questions }} /> : <GameStartOverlay startGame={startGame} />
             }
             
-            <Popup lockScroll={true} open={true} className="ackno-popup" closeOnDocumentClick>
-                <Acknowledge />
-            </Popup>
             <ToastContainer autoClose={4500} theme="dark" transition={Slide} />
 
         </>
