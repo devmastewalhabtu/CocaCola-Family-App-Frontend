@@ -2,7 +2,6 @@ import React, { useState, useContext } from 'react'
 import Popup from 'reactjs-popup';
 import { Acknowledge, CameraComponent, GameStartOverlay, QuestionOverlay } from '../components'
 
-import { CameraComponent, GameStartOverlay, QuestionOverlay } from '../components'
 import { getQuiz, getChallenge } from '../_helpers/cloudFunctions';
 import { ToastContainer, toast, Slide } from 'react-toastify';
 import RouteContext from '../_helpers/routeContext';
