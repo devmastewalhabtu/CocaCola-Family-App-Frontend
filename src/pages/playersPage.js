@@ -82,7 +82,7 @@ function PlayersPage() {
     )
 
     function generateLink(relation) {
-        if (path.via === 'TOGETHER') {
+        if (path?.via === 'TOGETHER') {
             navigate(`/${rootUrl ? rootUrl + '/' : ''}game`)
             return;
         }

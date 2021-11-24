@@ -14,7 +14,7 @@ import ReactFlagsSelect from 'react-flags-select';
 import { useLocation, useNavigate } from 'react-router-dom';
 import RouteContext from '../_helpers/routeContext';
 import { sendCode } from '../_helpers/cloudFunctions';
-
+import  UserContext  from '../_helpers/userContext';
 const auth = getAuth(FirebaseApp);
 
 function LoginPage() {
@@ -31,7 +31,8 @@ function LoginPage() {
     const containerRef = useRef(null);
     const toggleModal = (state) => setOpen(state);
     const [verificationId, setVerificationId] = useState('');
-    const [uid, setUid]=useState('');
+    const [uid, setUid] = useState('');
+    const { user } = useContext(UserContext);
     useEffect(() => {
         if (pathname.toLowerCase().includes('/my')) {
             setCountries(["MY"])
@@ -45,8 +46,20 @@ function LoginPage() {
 
     useEffect(() => {
         if (state) {
-            const { via, linkId } = state
-            storePath({ via, linkId })
+            const { via, linkId, challengeId } = state
+            if (via === "LINK") {
+
+                storePath({ via, linkId })
+            }else if (via === "CHALLENGE"){
+                storePath({ via, challengeId})
+            }
+        }
+        //Auto Login if session exist 
+        
+        if(user!==null) {
+            setUid(user)
+            toggleModal(false)
+            setLoginSuccess(true)
         }
         //eslint-disable-next-line
     }, [])
@@ -94,7 +107,7 @@ function LoginPage() {
                         Send
                     </button>
                 </form>) :
-                (<CodeVerification userData={{ name, phone, verificationId ,uid}} nextPage={state} toggleModal={toggleModal} />)
+                (<CodeVerification userData={{ name, phone, verificationId, uid }} nextPage={state} toggleModal={toggleModal} />)
             }
 
             <Popup open={open} className="login-popup" closeOnDocumentClick={false} onClose={() => toggleModal(false)}>
@@ -192,7 +205,7 @@ function LoginPage() {
             return
         }
         toggleModal(true)
-        //TODO: setuo Recaptach
+        //TODO: setup Recaptach
         //  const recaptchaVerifier = setupRecaptcha()
         // console.log(recaptchaVerifier);
 
@@ -214,9 +227,7 @@ function LoginPage() {
                 toggleModal(false)
                 console.error(error)
                 let errorMsg = "Couldn't log you in"
-                if (error.includes('invalid Data')) {
-                    errorMsg = "Invalid phone number or name. Check your input."
-                }
+               
                 toast(errorMsg, {
                     position: "bottom-center",
                     autoClose: 4500,
