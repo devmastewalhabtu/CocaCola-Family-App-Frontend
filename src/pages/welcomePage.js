@@ -59,7 +59,7 @@ function WelcomePage() {
                 {challengeLink ? (
 
                     <Link to={challengeLink ? `login?challenge=${challengeLink}` : "login"} state={{ via: 'CHALLENGE', challengeId: challengeLink }} className="img-btn img-btn--large fl-row just-center align-center">
-                        Start challenge
+                        Start now
                     </Link>) : (
 
                     link ? (

@@ -1,5 +1,4 @@
-import React, { useState, useContext, useEffect,useRef } from 'react'
-import Popup from 'reactjs-popup';
+import React, { useState, useContext, useEffect } from 'react'
 import { CameraComponent, GameStartOverlay, QuestionOverlay } from '../components'
 
 import { useNavigate, useLocation } from 'react-router-dom'
@@ -8,31 +7,22 @@ import { ToastContainer, toast, Slide } from 'react-toastify';
 import RouteContext from '../_helpers/routeContext';
 import UserContext from '../_helpers/userContext';
 import { createChallengeInstance, addChallenge, onChallengeCreated, answerQuestion, getScore } from '../_helpers/cloudFunctions'
-import { Acknowledge } from '../components/Acknowledge'
 
 function GamePlayPage() {
     const [gameStared, setGameStared] = useState(false)
     const [questions, setQuestions] = useState([])
     const { path } = useContext(RouteContext)
     const { user } = useContext(UserContext);
-
-
     const { storePath } = useContext(RouteContext)
-    const [open, setOpen] = useState(false);
-    const [ackOpen, setAckOpen] = useState(false);
-
     const [questoionsIndex, setQuestionsIndex] = useState(0)
     const [currentQuestion, setCurrentQuestion] = useState({})
     const [challengeAnswers, setChallengeAnswers] = useState([])
-    const webcamRef=useRef(null)
     let navigate = useNavigate();
 
     let { pathname } = useLocation()
     let pathArr = pathname.split('/')
     let rootUrl = pathArr[pathArr.length - 2] || '';
 
-
-    const toggleModal = (state) => setOpen(state);
 
     useEffect(() => {
         console.log(questoionsIndex)
@@ -80,7 +70,7 @@ function GamePlayPage() {
                 navigate(-1)
                 return
             }
-            var singleChallenge = {
+            singleChallenge = {
                 "questionId": currentQuestion?.question?.questionId,
                 "choiceId": currentQuestion?.answers?.choice2?.choiceId
             }
@@ -94,8 +84,6 @@ function GamePlayPage() {
 
         } else {
             setQuestionsIndex(questoionsIndex + 1);
-            setOpen(true)
-
         }
     }
     function startGame() {
@@ -192,8 +180,6 @@ function GamePlayPage() {
                 }
                 onChallengeCreated(challangeInstanceId)
                     .then(res => {
-                        setAckOpen(true)
-                        setOpen(false)
                     }).catch(err => {
                         console.log(err)
                     })

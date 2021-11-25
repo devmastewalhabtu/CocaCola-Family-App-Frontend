@@ -1,13 +1,13 @@
 
 import { FaceMesh } from "@mediapipe/face_mesh";
-import React, { useRef, useEffect, useState } from "react";
+import React from "react";
 import * as cam from "@mediapipe/camera_utils";
 import Webcam from "react-webcam";
-import { ToastContainer, toast, Slide } from 'react-toastify';
+import { ToastContainer, Slide } from 'react-toastify';
 import Popup from 'reactjs-popup';
 import Loader from "react-loader-spinner";
 var readForAnswer = true;
-var i = 1, len = 10;
+var len = 10;
 var answerBuffer = [];
 
 
@@ -129,12 +129,11 @@ class CameraComponent extends React.Component {
             }
             else if (results.multiFaceLandmarks.length === 1) {
 
-                var angle
                 for (let x in results.multiFaceLandmarks) {
                     // eslint-disable-next-line eqeqeq
 
                     if (x === "0" && results.multiFaceLandmarks[0].length === 468) {
-                        var slope = (results.multiFaceLandmarks[x][152].y * canvasElement.height - results.multiFaceLandmarks[x][10].y * canvasElement.height) / (results.multiFaceLandmarks[x][152].x * canvasElement.width - results.multiFaceLandmarks[x][10].x * canvasElement.width)
+                        slope = (results.multiFaceLandmarks[x][152].y * canvasElement.height - results.multiFaceLandmarks[x][10].y * canvasElement.height) / (results.multiFaceLandmarks[x][152].x * canvasElement.width - results.multiFaceLandmarks[x][10].x * canvasElement.width)
                         angle = (Math.atan(slope) * 180) / Math.PI;
                     }
 

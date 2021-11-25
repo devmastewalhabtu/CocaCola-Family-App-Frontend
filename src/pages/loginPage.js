@@ -1,6 +1,4 @@
 import React, { useState, useLayoutEffect, useEffect, useRef, useContext } from 'react'
-import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
-import FirebaseApp from '../_helpers/Firebase'
 import flower from '../assets/img/flower.png'
 import flame1 from '../assets/img/flame-1.png'
 import banner from '../assets/img/banner-full.png'
@@ -11,11 +9,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import 'reactjs-popup/dist/index.css';
 import CodeVerification from '../components/codeVerification';
 import ReactFlagsSelect from 'react-flags-select';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import RouteContext from '../_helpers/routeContext';
 import { sendCode } from '../_helpers/cloudFunctions';
-import  UserContext  from '../_helpers/userContext';
-const auth = getAuth(FirebaseApp);
 
 function LoginPage() {
     const [name, setName] = useState('')
@@ -26,23 +22,25 @@ function LoginPage() {
     const [errors, setErrors] = useState({})
     const [loginSuccess, setLoginSuccess] = useState(false)
     const [open, setOpen] = useState(false);
-    let { pathname, state } = useLocation()
-    const { storePath } = useContext(RouteContext)
+    let { state } = useLocation()
+    const {storePath} = useContext(RouteContext)
     const containerRef = useRef(null);
     const toggleModal = (state) => setOpen(state);
     const [verificationId, setVerificationId] = useState('');
     const [uid, setUid] = useState('');
-    const { user } = useContext(UserContext);
     useEffect(() => {
-        if (pathname.toLowerCase().includes('/my')) {
+        const { hostname } = window.location
+        const hostArr = hostname.split('.')
+        const countryCode = hostArr[hostArr.length -1]?.toLowerCase()
+        if (countryCode === 'my') {
             setCountries(["MY"])
             setSelected('MY')
             setPrefix('+60')
             setPhone('+60')
-        } else if (pathname.toLowerCase().includes('/sg')) {
+        } else if (countryCode === 'sg') {
             setCountries(["SG"])
         }
-    }, [pathname])
+    }, [])
 
     useEffect(() => {
         if (state) {
@@ -104,7 +102,7 @@ function LoginPage() {
                     </div>
                     <span className="form__error">{errors["phone"]}</span>
                     <button id="sign-in-button" type="submit" className="img-btn form__btn">
-                        Send
+                        SEND
                     </button>
                 </form>) :
                 (<CodeVerification userData={{ name, phone, verificationId, uid }} nextPage={state} toggleModal={toggleModal} />)
@@ -165,30 +163,30 @@ function LoginPage() {
         return formIsValid;
     }
 
-    function setupRecaptcha() {
-        const recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
-            'size': 'invisible',
-            'callback': (response) => {
-                // reCAPTCHA solved, allow signInWithPhoneNumber.
-                onSubmitHandler()
-            },
-            'expired-callback': () => {
-                // Response expired. Ask user to solve reCAPTCHA again.
-                recaptchaVerifier.clear()
-                containerRef.current.innerHTML = `<div id="recaptcha-container"></div>`
-                toast("Recaptcha expired. Try again", {
-                    position: "bottom-center",
-                    autoClose: 4500,
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                    draggable: false,
-                    progress: undefined,
-                });
-            }
-        }, auth);
-        return recaptchaVerifier
-    }
+    // function setupRecaptcha() {
+    //     const recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
+    //         'size': 'invisible',
+    //         'callback': (response) => {
+    //             // reCAPTCHA solved, allow signInWithPhoneNumber.
+    //             onSubmitHandler()
+    //         },
+    //         'expired-callback': () => {
+    //             // Response expired. Ask user to solve reCAPTCHA again.
+    //             recaptchaVerifier.clear()
+    //             containerRef.current.innerHTML = `<div id="recaptcha-container"></div>`
+    //             toast("Recaptcha expired. Try again", {
+    //                 position: "bottom-center",
+    //                 autoClose: 4500,
+    //                 hideProgressBar: true,
+    //                 closeOnClick: true,
+    //                 pauseOnHover: false,
+    //                 draggable: false,
+    //                 progress: undefined,
+    //             });
+    //         }
+    //     }, auth);
+    //     return recaptchaVerifier
+    // }
 
     function updatePhone(val) {
         if (val.length > 14) return

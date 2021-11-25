@@ -1,16 +1,8 @@
-import React, { useEffect, useState, useContext } from 'react'
+import React from 'react'
 import flower from '../assets/img/flower.png'
 import bottle from '../assets/img/bottle.png'
 import cork from '../assets/img/cork.png'
 import flame1 from '../assets/img/flame-1.png'
-import Loader from "react-loader-spinner";
-import Popup from 'reactjs-popup';
-import UserContext from '../_helpers/userContext';
-import { createChallengeInstance, addChallenge, onChallengeCreated, answerQuestion, getScore } from '../_helpers/cloudFunctions'
-import RouteContext from '../_helpers/routeContext';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Acknowledge } from '.'
-
 
 function QuestionOverlay(props) {
     
