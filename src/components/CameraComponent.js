@@ -6,7 +6,7 @@ import Webcam from "react-webcam";
 import { ToastContainer, Slide } from 'react-toastify';
 import Popup from 'reactjs-popup';
 import Loader from "react-loader-spinner";
-var readForAnswer = true;
+
 var len = 10;
 var answerBuffer = [];
 
@@ -39,7 +39,7 @@ class CameraComponent extends React.Component {
     onResults = (results) => {
 
         if(this.state.open) this.toggleModal(false);
-        if (readForAnswer) {
+        if (this.props?.readyToAnswer) {
             const videoWidth = this.webcamRef.current.video.videoWidth;
             const videoHeight = this.webcamRef.current.video.videoHeight;
 
@@ -197,13 +197,11 @@ class CameraComponent extends React.Component {
         if (buffer.length === len) {
             var ans = buffer.join("-");
             if (ans === "Yes-Yes-Yes-Yes-Yes-Yes-Yes-Yes-Yes-Yes") {
-                readForAnswer = true;
                 answerBuffer = [];
                 this.props.onChoiceMade(1)
 
             }
             else if (ans === "No-No-No-No-No-No-No-No-No-No") {
-                readForAnswer = true;
                 answerBuffer = [];
                 this.props.onChoiceMade(-1)
             }
@@ -225,7 +223,7 @@ class CameraComponent extends React.Component {
                     ref={this.canvasRef}
                     className="output_canvas"
                 ></canvas>
-                <Popup open={this.state.open} className="login-popup" closeOnDocumentClick={false} onClose={() => this.toggleModal(false)}>
+                <Popup open={this.state.open } className="login-popup" closeOnDocumentClick={false} onClose={() => this.toggleModal(false)}>
                     <div className="modal">
                         <Loader
                             type="TailSpin"
@@ -238,6 +236,17 @@ class CameraComponent extends React.Component {
                 </Popup>
                 <ToastContainer autoClose={4500} theme="dark" transition={Slide} />
 
+                <Popup open={!this.state.open && (!this.props?.readyToAnswer || this.props?.quizEnd)}  className="next-popup" transparent={true} closeOnDocumentClick={false} onClose={() => this.toggleModal(false)}>
+                    <div className="modal">
+                        <Loader
+                            type="ThreeDots"
+                            color="white"
+                            height={80}
+                            width={80}
+                        />
+                    </div>
+                </Popup>
+                <ToastContainer autoClose={4500} theme="dark" transition={Slide} />
             </div>
 
 
