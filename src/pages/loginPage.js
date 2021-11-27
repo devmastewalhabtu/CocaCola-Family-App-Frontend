@@ -50,6 +50,10 @@ function LoginPage() {
                 storePath({ via, linkId })
             }else if (via === "CHALLENGE"){
                 storePath({ via, challengeId})
+            }else if(via === "TOGETHER"){
+                storePath({ via })
+            }else if(via === "NORMAL"){
+                storePath({ via })
             }
         }
         //Auto Login if session exist 

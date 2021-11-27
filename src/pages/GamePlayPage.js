@@ -30,11 +30,14 @@ function GamePlayPage() {
 
     useEffect(() => {
         if (questoionsIndex === questions.length && gameStared && questoionsIndex !== 0 && !quizEnd) {
-            
+
             setReadyToAnswer(false)
             if (path?.via === "CHALLENGE") {
                 uploadAnswerAndRedirectToScore(path?.challengeId)
-            } else {
+            } if (path?.via === "TOGETHER") {
+                calculateAndUploadScore()
+            }
+            else {
                 setQuizEnd(true);
                 uploadChallangeAndSendSms(challengeAnswers)
             }
@@ -44,26 +47,38 @@ function GamePlayPage() {
         //eslint-disable-next-line
     }, [challengeAnswers, questoionsIndex])
     useEffect(() => {
+        var singleChallenge;
         var result = choice
         if (result !== null && !readyToAnswer) {
-            if (result === -1) {
-                if (gameStared === false) {
+            if (path?.via === "TOGETHER") {
+                if (result != null) {
 
-                    startGame()
-                    return
+                    if (gameStared === false) {
+                        startGame()
+                        return
+                    }
+                    singleChallenge = result;
                 }
-                var singleChallenge = {
-                    "questionId": currentQuestion?.question?.questionId,
-                    "choiceId": currentQuestion?.answers?.choice2?.choiceId
-                }
-            } else if (result === 1) {
-                if (gameStared === false) {
-                    navigate(-1)
-                    return
-                }
-                singleChallenge = {
-                    "questionId": currentQuestion?.question?.questionId,
-                    "choiceId": currentQuestion?.answers?.choice2?.choiceId
+            } else {
+                if (result === -1) {
+                    if (gameStared === false) {
+
+                        startGame()
+                        return
+                    }
+                    singleChallenge = {
+                        "questionId": currentQuestion?.question?.questionId,
+                        "choiceId": currentQuestion?.answers?.choice2?.choiceId
+                    }
+                } else if (result === 1) {
+                    if (gameStared === false) {
+                        navigate(-1)
+                        return
+                    }
+                    singleChallenge = {
+                        "questionId": currentQuestion?.question?.questionId,
+                        "choiceId": currentQuestion?.answers?.choice1?.choiceId
+                    }
                 }
             }
             setChallengeAnswers((oldArray => [...oldArray, singleChallenge]))
@@ -76,12 +91,12 @@ function GamePlayPage() {
                 setQuestionsIndex(questoionsIndex + 1);
             }
         }
-    
-            setTimeout(() => {
-                setReadyToAnswer(true);
-            }, 1000)
-    
 
+        setTimeout(() => {
+            setReadyToAnswer(true);
+        }, 1000)
+
+        //eslint-disable-next-line 
     }, [readyToAnswer, choice])
 
     return (
@@ -172,7 +187,6 @@ function GamePlayPage() {
         getScore(challengeInstanceId, user)
             .then(res => {
                 storePath({ "SCORE": res?.data?.percentage })
-                console.log("Here")
                 navigate(`/${rootUrl ? rootUrl + '/' : ''}score`)
             }).catch(err => {
                 console.log(err)
@@ -211,8 +225,21 @@ function GamePlayPage() {
                 console.log(err)
 
             })
-
-
+    }
+    function calculateAndUploadScore() {
+        console.log(challengeAnswers)
+        var score =0;
+        var percentage=0
+        for (const challenge of challengeAnswers){
+            if (challenge===1){
+                score=score+1;
+            }
+        }
+        const totalQuestions = challengeAnswers.length;
+        percentage=(score/totalQuestions)*100;
+        //TODO: add endpoint to score for challenge
+        storePath({ "SCORE": percentage })
+        navigate(`/${rootUrl ? rootUrl + '/' : ''}score`)
     }
 }
 
