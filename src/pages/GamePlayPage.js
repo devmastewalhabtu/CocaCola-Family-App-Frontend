@@ -103,16 +103,12 @@ function GamePlayPage() {
         <>
             <CameraComponent onChoiceMade={onChoiceMade} readyToAnswer={readyToAnswer} quizEnd={quizEnd} />
             {
-
-                gameStared ? <QuestionOverlay currentQuestion={currentQuestion} /> : <GameStartOverlay startGame={startGame} />
-
+                !quizEnd ?  gameStared ? <QuestionOverlay currentQuestion={currentQuestion} /> : <GameStartOverlay startGame={startGame} />  : <Acknowledge/>
 
             }
 
             <ToastContainer autoClose={4500} theme="dark" transition={Slide} />
-            <Popup lockScroll={true} open={quizEnd} className="ackno-popup" >
-                <Acknowledge />
-            </Popup>
+          
         </>
     )
     function onChoiceMade(result) {
