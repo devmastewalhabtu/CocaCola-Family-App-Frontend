@@ -182,7 +182,7 @@ function GamePlayPage() {
 
         getScore(challengeInstanceId, user)
             .then(res => {
-                storePath({ "SCORE": res?.data?.percentage })
+                storePath({ "SCORE": res?.data })
                 navigate(`/${rootUrl ? rootUrl + '/' : ''}score`)
             }).catch(err => {
                 console.log(err)
