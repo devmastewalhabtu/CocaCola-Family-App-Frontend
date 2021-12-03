@@ -28,6 +28,8 @@ function GamePlayPage() {
     let pathArr = pathname.split('/')
     let rootUrl = pathArr[pathArr.length - 2] || '';
 
+    const [challengeLink, setChallengeLink]= useState('asd')
+
     useEffect(() => {
         if (questoionsIndex === questions.length && gameStared && questoionsIndex !== 0 && !quizEnd) {
 
@@ -103,7 +105,7 @@ function GamePlayPage() {
         <>
             <CameraComponent onChoiceMade={onChoiceMade} readyToAnswer={readyToAnswer} quizEnd={quizEnd} />
             {
-                !quizEnd ?  gameStared ? <QuestionOverlay currentQuestion={currentQuestion} /> : <GameStartOverlay startGame={startGame} />  : <Acknowledge/>
+                !quizEnd ?  gameStared ? <QuestionOverlay currentQuestion={currentQuestion} /> : <GameStartOverlay startGame={startGame} />  : <Acknowledge asd={challengeLink}/>
 
             }
 
@@ -206,13 +208,15 @@ function GamePlayPage() {
                     }
                     addChallenge(singleChallenge.questionId, singleChallenge.challangeInstanceId, singleChallenge.answerId)
                         .then(res => {
-                            console.log(res.data)
                         }).catch(err => {
                             console.log(err)
                         })
                 }
                 onChallengeCreated(challangeInstanceId)
                     .then(res => {
+                        console.log(res.data)
+                        
+                        setChallengeLink(res?.data?.message)
                     }).catch(err => {
                         console.log(err)
                     })
